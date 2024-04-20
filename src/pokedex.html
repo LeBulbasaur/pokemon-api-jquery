@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #carousel{
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            margin-bottom: 20px;
+        }
+
+        .card-parent {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 1rem;
+        }
+
+        .card {
+            width: 18rem;
+        }
+
+        @media screen and (max-width: 1500px) {
+            #carousel {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            
+        }
+
+        @media screen and (max-width: 1200px) {
+            #carousel {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+        }
+
+        @media screen and (max-width: 768px) {
+            #carousel {
+                grid-template-columns: 1fr;
+                width: 100%;
+            }
+            
+            .card {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="carousel" class="row"></div>
+    <script>
+        $(document).ready(function() {
+            const pokemonData = window.localStorage.getItem('pokemon') ? JSON.parse(window.localStorage.getItem('pokemon')) : [];
+            const carousel = $('#carousel');
+            for (let i = 0; i < pokemonData.length; i++) {
+                carousel.append(`
+                <div class="card-parent col-sm">
+                    <div class="card">
+                        <img src="${pokemonData[i].image}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title
+                            ">${pokemonData[i].name}</h5>
+                            <p class="card-text">Types: ${pokemonData[i].types.join(', ')}</p>
+                            <p class="card-text">Abilities: ${pokemonData[i].abilities.join(', ')}</p>
+                        </div>
+                        <div class="card-body">
+                            <button id="remove-button" class="btn btn-danger">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                `);
+            }
+
+            $('#carousel').on('click', '#remove-button', function() {
+                const card = $(this).closest('.card-parent');
+                const cardIndex = card.index();
+                pokemonData.splice(cardIndex, 1);
+                window.localStorage.setItem('pokemon', JSON.stringify(pokemonData));
+                card.remove();
+            });
+        })
+    </script>
+</body>
+</html>

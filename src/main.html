@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .main-container{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #gif-xd{
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        #gif-xd img{
+            width: 80%;
+        }
+
+        @media screen and (max-width: 768px) {
+            .card, .card-container{
+                width: 100%;
+            }
+
+            .card-container{
+                padding: 0;
+                display: flex;
+                justify-content: center;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container main-container">
+        <div class="row justify-content-center form-container">
+            <form id="search-form" class="col-6">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Pokemon Name</label>
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Enter name" required>
+                </div>
+                <input type="submit" class="btn btn-primary">
+            </form>
+        </div>
+        <div class="row justify-content-center" style="padding: 3rem;">
+            <h1 id="incorrect-header">Incorrect pokemon name!</h1>
+            <div id="gif-xd">
+                <img src="https://i.kym-cdn.com/photos/images/original/000/931/339/b35.gif" alt="">
+            </div>
+            <div class="col-auto card-container">
+                <div id="pokemon-card" class="card">
+                    <img id="image-display" class="card-img-top" alt="pokemon image">
+                    <div class="card-body">
+                        <h5 id="name-display" class="card-title"></h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li id="types-display" class="list-group-item"></li>
+                        <li id="abilities-display" class="list-group-item"></li>
+                    </ul>
+                    <div class="card-body">
+                        <button id="save-button" class="btn btn-primary">Add to Pokedex</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <script>
+        $(document).ready(function() {
+            let apiData = null;
+
+            const savePokemon = function(pokemon) {
+                const pokemonList = window.localStorage.getItem('pokemon') ? JSON.parse(window.localStorage.getItem('pokemon')) : [];
+                pokemonList.push(pokemon);
+                window.localStorage.setItem('pokemon', JSON.stringify(pokemonList));
+            }
+
+            $('#save-button').on('click', function() {
+                if (apiData === null) {
+                    return;
+                }
+                savePokemon({
+                    name: apiData.name,
+                    image: apiData.image,
+                    types: apiData.types,
+                    abilities: apiData.abilities
+                });
+
+                $('#save-button').prop('disabled', true);
+            });
+
+            $('#search-form').submit(function(event) {
+                event.preventDefault();
+                const name = $('#name').val();
+
+                $('#gif-xd').css('display', 'none');
+
+                $.ajax({
+                    url: `https://pokeapi.co/api/v2/pokemon/${name}`,
+                    type: 'GET',
+                    async: true,
+                    success: function(response) {
+                        $('#incorrect-header').css('display', 'none');
+
+                        const name = response.name;
+                        const image = response.sprites.front_default;
+                        const types = response.types.map(type => type.type.name);
+                        const abilities = response.abilities.map(ability => ability.ability.name);
+
+                        $('#name-display').text(name);
+                        $('#image-display').attr('src', image);
+                        $('#types-display').text(types.join(', '));
+                        $('#abilities-display').text(abilities.join(', '));
+                        $('#pokemon-card').css('display', 'block')
+
+                        apiData = {name: name, image: image, types: types, abilities: abilities}
+
+                        if (window.localStorage.getItem('pokemon')) {
+                            const pokemonList = JSON.parse(window.localStorage.getItem('pokemon'));
+                            const pokemon = pokemonList.find(pokemon => pokemon.name === name);
+                            if (pokemon) {
+                                $('#save-button').prop('disabled', true);
+                            } else {
+                                $('#save-button').prop('disabled', false);
+                            }
+                        } else {
+                            $('#save-button').prop('disabled', false);
+                        }
+
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        $('#pokemon-card').css('display', 'none');
+                        $('#incorrect-header').css('display', 'block');
+                        $('#gif-xd').css('display', 'flex'); 
+                    }
+                });
+            });
+        })
+    </script>
+</body>
+</html>
