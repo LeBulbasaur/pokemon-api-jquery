@@ -5,6 +5,7 @@ This project is a simple web application that allows users to search for Pokemon
 ## Features
 
 - Search for Pokemon by name
+- Add favorite Pokemon to Pokedex
 - Responsive design that works on both desktop and mobile devices
 
 ## Installation
