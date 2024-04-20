@@ -15,11 +15,3 @@ This project is a simple web application that allows users to search for Pokemon
 ## Usage
 
 Enter the name of the Pokemon you want to search for in the input field and press the submit button. If the Pokemon name is incorrect, a message will be displayed.
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
