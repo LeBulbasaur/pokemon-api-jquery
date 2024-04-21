@@ -28,7 +28,7 @@ $(document).ready(function() {
         }
       });  
 
-    $('a').click(function () {
+    $('.site').click(function () {
         $('#content').load($(this).attr('href'));
         return false;
     });
